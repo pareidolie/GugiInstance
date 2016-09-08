@@ -1,0 +1,6 @@
+## Interface: 70000
+## Title: GugiInstance
+## Version: 1.0.0-beta
+
+embeds.xml
+Core.lua
