@@ -49,6 +49,7 @@ MYTHIC5 = 23
 CHANNEL_PREFIX = "GugiInstance"
 CHANNEL_REQUEST = CHANNEL_PREFIX .. "R"
 CHANNEL_ANSWER = CHANNEL_PREFIX .. "A"
+EMPTY_PLAYER = "-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n-"
 
 -- END GLOBALS
 
@@ -126,9 +127,31 @@ function GugiInstance:ShowFrame()
     label:SetFullWidth(true)
     label:SetFullHeight(true)
     
-    self.frame:AddChild(header)
+    
     self.playerFrames = {}
     self.playerLabels = {}
+    
+    self.frame:AddChild(header)
+    
+    for i = 1, 6 do
+        local container = GugiInstanceGui:Create("InlineGroup")
+        container:SetHeight(300)
+        container:SetWidth(160)
+        container:SetLayout("Flow")
+        
+        local label = GugiInstanceGui:Create("Label")
+        label:SetText(EMPTY_PLAYER)
+        label:SetFullWidth(true)
+        label:SetFullHeight(true)
+        container:AddChild(label)
+        
+        self.frame:AddChild(container)
+        
+        self.playerFrames[#self.playerFrames + 1] = container
+        self.playerLabels[#self.playerLabels + 1] = label
+    end
+    
+    
     
     self:UpdateInfo()
     
@@ -154,24 +177,6 @@ function GugiInstance:UpdateInfo()
     local count = 0
     for _ in pairs(self.players) do
         count = count + 1
-    end
-
-    for i = 0, (count - #self.playerFrames) do
-        local container = GugiInstanceGui:Create("InlineGroup")
-        container:SetHeight(300)
-        container:SetWidth(160)
-        container:SetLayout("Flow")
-        
-        local label = GugiInstanceGui:Create("Label")
-        label:SetText("-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n-")
-        label:SetFullWidth(true)
-        label:SetFullHeight(true)
-        container:AddChild(label)
-        
-        self.frame:AddChild(container)
-        
-        self.playerFrames[#self.playerFrames + 1] = container
-        self.playerLabels[#self.playerLabels + 1] = label
     end
     
     local index = 1
@@ -206,7 +211,7 @@ function GugiInstance:UpdateInfo()
     end
     self.playerLabels[#self.playerLabels]:SetText(text)
     
-    self.frame:SetWidth(220 + 180 * (count + 1))
+    self.frame:SetWidth(1200)
     self.frame:DoLayout()
     for i = 1, count + 1 do
         self.playerFrames[count + 2 - i]:DoLayout()
@@ -239,6 +244,10 @@ function GugiInstance:AddInfo(info)
 end
 
 function GugiInstance:SendSyncRequest()
+    self.players = {}
+    for i = 1, #self.playerLabels do
+        self.playerLabels[i]:SetText(EMPTY_PLAYER)
+    end
     SendAddonMessage(CHANNEL_REQUEST, "SYNC", "PARTY")
 end
 
